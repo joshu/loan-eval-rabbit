@@ -29,15 +29,14 @@ def handleEvents(ch, method, properties, body):
 
   message_dict["purchase_result"] = "pass"
   message_dict["timestamp"] = time.time()
-  rk = 'borrower.credit-assessment.complete'
+  rk = 'borrower.credit-assessment.reply'
   publishEvent(ch, exchange, rk, message_dict)
 
 def unpackMessage(rk,body):
   d = json.loads(body)
-  id = d["request_id"]
-  uid = uuid.UUID(id)
+  uid = uuid.UUID(d["request_id"])
   timestamp = d["timestamp"]
-  print " [credit] Received %r:%r:%r" % (str(uid),timestamp,rk)
+  print " [credit] Received {}:{}:{}".format(str(uid),timestamp,rk)
   return d
 
 def publishEvent(channel, exchange, routing_key, message_dict):
@@ -45,7 +44,8 @@ def publishEvent(channel, exchange, routing_key, message_dict):
   channel.basic_publish(exchange=exchange,
                        routing_key=routing_key,
                        body=newBody)
-  print " [credit] Sent     %r:%r:%r" % (message_dict["request_id"],
+  uid = uuid.UUID(message_dict["request_id"])
+  print " [credit] Sent     {}:{}:{}".format(str(uid),
                                           message_dict["timestamp"],routing_key)
 
 def sleepRandom(low, high):
@@ -64,7 +64,12 @@ def consumeEvents(chan, qn):
 #
 # Main
 #
-host = sys.argv[1] or 'localhost'
+try:
+    host = sys.argv[1]
+except IndexError:
+    host = 'localhost'
+print "{}".format(host)
+
 exchange = 'topic_loan_eval'
 connection = pika.BlockingConnection(pika.ConnectionParameters(host=host))
 channel = createChannelOnTopicExchange(connection,exchange)
