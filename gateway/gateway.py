@@ -110,7 +110,7 @@ except IndexError:
 connection = pika.BlockingConnection(pika.ConnectionParameters(host=host))
 
 client_request_queue = 'eval.request'
-client_request_channel = createChannelOnDefaultExchange(connection, client_request_queue)
+request_channel = createChannelOnDefaultExchange(connection, client_request_queue)
 
 client_reply_queue = 'eval.reply'
 client_reply_channel = createChannelOnDefaultExchange(connection, client_reply_queue)
@@ -127,9 +127,11 @@ bindQueuesToExchange(reply_channel,reply_exchange,queue_out,binding_keys)
 control_exchange = 'fre.eval.control'
 control_channel, control_queue = createQueueOnTopicExchange(connection,control_exchange)
 
+register(request_channel, on_client_message, client_request_queue)
+register(request_channel, on_eval_message, eval_request_queue)
+
 print ' [%s] Waiting for events. To exit press CTRL+C' % (serviceName())
 
-register(client_request_channel, on_client_message, client_request_queue)
-run(client_request_channel)
+run(request_channel)
 
-# on_message runs here
+# callbacks runs here
