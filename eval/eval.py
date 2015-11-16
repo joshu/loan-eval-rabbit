@@ -99,7 +99,7 @@ def processMessage(channel,exchange,routing_key,message):
 
   elif routing_key == "pml.eval-services.reply":
     logAndSendResponseTime(id)
-    reply_key = 'pml.loan-eval.reply'
+    reply_key = 'pml.eval.reply'
     sendReplyAndControl(channel,exchange,reply_key,message)
 
 def sendReplyAndControl(channel, exchange, reply_key, message):

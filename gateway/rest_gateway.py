@@ -14,7 +14,7 @@ eval_requests = [
       "id": 1,
       "seller_no": 1234,
       "seller_name": "Wells Fargo Retail",
-      "request_id": 54321,
+      "request_id": 12345,
       "ulad": {}
     },
     {
@@ -25,6 +25,9 @@ eval_requests = [
       "ulad": {}
     }
 ]
+
+eval_requests[0]["request_id"] = uuid.uuid4().hex
+eval_requests[1]["request_id"] = uuid.uuid4().hex
 
 # http://[hostname]/loaneval/api/v1.0/requests
 
@@ -61,13 +64,30 @@ def create_request():
     }
     eval_requests.append(eval_request)
     eval_request['timestamp'] = time.time()
+    publish_eval_request(eval_request)
+    return jsonify({'request': eval_request}), 201
+
+def publish_eval_request(eval_request):
     publish_key = 'pml.eval.request'
+    eval_request["timestamp"]=time.time()
+    print "rest gateway publishing pml.eval.request: %r:%r" % (eval_request["request_id"], eval_request["timestamp"])
     message = json.dumps(eval_request)
     channel.basic_publish(exchange='topic_loan_eval',
                           routing_key=publish_key,
                           body=message)
-    return jsonify({'request': eval_request}), 201
 
+@app.route('/loaneval/api/v1.0/send/<int:count>', methods=['POST'])
+def publish_requests(count):
+  if count > len(eval_requests):
+    return jsonify({'error': "count > rows in database"})
+  for i in range(count):
+    publish_eval_request(eval_requests[i])
+
+  return jsonify({'sent': count})
+
+@app.route('/loaneval/api/v1.0/send/', methods=['GET'])
+def count_requests():
+    return jsonify({'count': len(eval_requests)})
 
 if __name__ == "__main__":
   try:

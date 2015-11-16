@@ -3,6 +3,7 @@ import pika
 import sys
 import json
 import time
+import uuid
 
 def createChannelOnTopicExchange(connection,exchange):
     channel = connection.channel()
@@ -39,18 +40,19 @@ def handleEvents(ch, method, properties, body):
 
 def unpackMessage(rk,body):
   d = json.loads(body)
-  id = d["request_id"]
+  uid = uuid.UUID(d["request_id"])
   timestamp = d["timestamp"]
-  print " [aggregator] Received %r:%r:%r" % (id,timestamp,rk)
+  print " [aggregator] Received %r:%r:%r" % (str(uid),timestamp,rk)
   return d
 
 def publishEvent(channel,exchange,routing_key,timestamp,id,event):
-      event["timestamp"] = timestamp
-      eventJSON = json.dumps(event)
-      channel.basic_publish(exchange=exchange,
-                           routing_key=routing_key,
-                           body=eventJSON)
-      print " [aggregator] Sent     %r:%r:%r" % (id,timestamp,routing_key)
+  event["timestamp"] = timestamp
+  uid = uuid.UUID(event["request_id"])
+  eventJSON = json.dumps(event)
+  channel.basic_publish(exchange=exchange,
+                       routing_key=routing_key,
+                       body=eventJSON)
+  print " [aggregator] Sent     %r:%r:%r" % (str(uid),timestamp,routing_key)
 
 def consumeEvents(chan, qn):
   chan.basic_consume(handleEvents,
@@ -65,7 +67,6 @@ try:
     host = sys.argv[1]
 except IndexError:
     host = 'localhost'
-print "{}".format(host)
 
 wip = {}
 exchange = 'topic_loan_eval'

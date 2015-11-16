@@ -1,0 +1,30 @@
+rabbitmq:
+  image: rabbitmq
+
+eval:
+  build: eval/.
+  environment:
+    RABBIT_ADDR: '172.17.0.2'
+
+validate:
+  build: validate/.
+  environment:
+    - RABBIT_ADDR='172.17.0.2'
+
+purchase:
+  build: purchase/.
+  environment:
+    - RABBIT_ADDR='172.17.0.2'
+
+credit:
+  build: credit/.
+  environment:
+    - RABBIT_ADDR='172.17.0.2'
+
+aggregator:
+  build: aggregator/.
+  environment:
+    - RABBIT_ADDR='172.17.0.2'
+
+
+

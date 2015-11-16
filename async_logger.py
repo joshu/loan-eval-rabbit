@@ -46,12 +46,12 @@ class Consumer(object):
         self.logReceive(method.routing_key,body)
 
     def serviceName(self):
-			file_name = (os.path.basename(__file__))
-			return file_name.split('.')[0]
+      file_name = (os.path.basename(__file__))
+      return file_name.split('.')[0]
 
     def logReceive(self, routing_key, message):
       eval_request = json.loads(message)
-      print(message)
+ #     print(message)
       uid = uuid.UUID(eval_request["request_id"])
       print " [%s] Received %r:%r:%r" % (self.serviceName(),
         str(uid),eval_request["timestamp"],routing_key)
