@@ -9,25 +9,31 @@ import uuid
 
 app = Flask(__name__)
 
-eval_requests = [
-     {
+eval_requests = []
+
+def make_eval_requests(count, seller, name):
+  for i in range(count):
+    request = make_request(i, seller, name)
+    eval_requests.append(request)
+
+def make_request(id, seller, name):
+   request = make_template_request()
+   request["id"] = id
+   request["seller_no"]   = seller
+   request["seller_name"] = name
+   request["request_id"]  = uuid.uuid4().hex
+
+   return request
+
+def make_template_request():
+  request = {
       "id": 1,
       "seller_no": 1234,
       "seller_name": "Wells Fargo Retail",
       "request_id": 12345,
       "ulad": {}
-    },
-    {
-      "id": 2,
-      "seller_no": 1234,
-      "seller_name": "Wells Fargo Retail",
-      "request_id": 12345,
-      "ulad": {}
     }
-]
-
-eval_requests[0]["request_id"] = uuid.uuid4().hex
-eval_requests[1]["request_id"] = uuid.uuid4().hex
+  return request
 
 # http://[hostname]/loaneval/api/v1.0/requests
 
@@ -81,9 +87,18 @@ def publish_requests(count):
   if count > len(eval_requests):
     return jsonify({'error': "count > rows in database"})
   for i in range(count):
+    r = make_request(i, 1234, "Wells Fargo Retail")
     publish_eval_request(eval_requests[i])
+    time.sleep(.5)
 
-  return jsonify({'sent': count})
+@app.route('/loaneval/api/v1.0/sendl/<int:count>', methods=['POST'])
+def publish_large_request(count):
+  for i in range(count):
+    r = make_request(i, 1234, "Wells Fargo Retail")
+    publish_eval_request(r)
+    time.sleep(.5)
+
+  return jsonify({'sent_large': count})
 
 @app.route('/loaneval/api/v1.0/send/', methods=['GET'])
 def count_requests():
@@ -95,7 +110,9 @@ if __name__ == "__main__":
   except IndexError:
     mq_host = 'localhost'
 
-  connection = pika.BlockingConnection(pika.ConnectionParameters(host=mq_host))
+  make_eval_requests(10, 1234, "Wells Fargo Retail")
+
+  connection = pika.BlockingConnection(pika.ConnectionParameters(host=mq_host, heartbeat_interval=0))
   channel = connection.channel()
   channel.queue_declare(queue='pml.eval.request')
 

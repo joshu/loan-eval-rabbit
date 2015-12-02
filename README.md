@@ -34,11 +34,18 @@ The current components and their roles in the non-prototype version:
 Assumes you are using docker
 
 1. Download the repo
+2. Build the python image with pika
+
+  docker build -t python:pika .
+
 2. Run the build_images.sh script to make the docker images
 3. Start RabbitMQ in the docker server
-4. Get the RabbitMQ container address using 
 
-  docker inspect -format '{{ .NetworkSettings.IPAddress }}' ${CID} 
+  docker run -d -p 5672:5672 -p 15672:15672  --name rabbitmq rabbitmq
+
+4. Get the RabbitMQ container address using
+
+  docker inspect --format '{{ .NetworkSettings.IPAddress }}' ${CID}
 
 5. Edit the run_services.sh script with the RabbitMQ address (for now :--)
 6. Start another terminal and run
@@ -48,5 +55,5 @@ Assumes you are using docker
 7. In the first terminal, run
 
   python mock_client.py 1
-  
+
 8. Watch the messages flow in the receive_control.py terminal

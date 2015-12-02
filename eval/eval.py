@@ -134,7 +134,7 @@ channel, queue_name = createQueueOnTopicExchange(connection,exchange)
 binding_keys = ['pml.eval.request', 'loan.validation.reply', 'pml.eval-services.reply']
 bindQueuesToExchange(channel, exchange, queue_name, binding_keys)
 
-control_exchange = 'fre.eval.control'
+log_exchange = 'fre.eval.log'
 control_channel, control_queue = createQueueOnTopicExchange(connection,control_exchange)
 
 print ' [%s] Waiting for events. To exit press CTRL+C' % (serviceName())
