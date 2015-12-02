@@ -1,7 +1,5 @@
 curl -i http://localhost:5000/loaneval/api/v1.0/requests/
 
-curl -i http://localhost:5000/loaneval/api/v1.0/requests/12345
-
 curl -i http://localhost:5000/loaneval/api/v1.0/requests/23456
 
 curl -i -H "Content-Type: application/json" -X POST -d '{"request_id": 23456,  "seller_name": "Wells Fargo Retail", "seller_no": 1234,"ulad": {}}' http://localhost:5000/loaneval/api/v1.0/requests
