@@ -6,6 +6,7 @@ import time
 import random
 import uuid
 import os
+import socket
 
 #
 # Message Gateway abstraction
@@ -117,6 +118,17 @@ def logAndSendResponseTime(id):
   rt_message["timestamp"]  = response_time
   reply_key = 'pml.eval.response-time'
   sendMessageToControl(reply_key,rt_message)
+  sendResponseTimeAsUDP(response_time)
+
+def sendResponseTimeAsUDP(rt):
+  MESSAGE = "loan_eval_api.amqp.eval.request.response_time:%d|ms" % (rt)
+  print "UDP target IP:", UDP_IP
+  print "UDP target port:", UDP_PORT
+  print "message:", MESSAGE
+
+  sock = socket.socket(socket.AF_INET,     # Internet
+                       socket.SOCK_DGRAM)  # UDP
+  sock.sendto(MESSAGE, (UDP_IP, UDP_PORT))
 
 #
 # Main
@@ -126,6 +138,9 @@ try:
 except IndexError:
     host = 'localhost'
 
+UDP_IP = host
+UDP_PORT = 8125    # StatsD
+
 start_time = {}
 exchange = 'topic_loan_eval'
 connection = pika.BlockingConnection(pika.ConnectionParameters(host=host))
@@ -134,7 +149,7 @@ channel, queue_name = createQueueOnTopicExchange(connection,exchange)
 binding_keys = ['pml.eval.request', 'loan.validation.reply', 'pml.eval-services.reply']
 bindQueuesToExchange(channel, exchange, queue_name, binding_keys)
 
-log_exchange = 'fre.eval.log'
+control_exchange = 'fre.eval.control'
 control_channel, control_queue = createQueueOnTopicExchange(connection,control_exchange)
 
 print ' [%s] Waiting for events. To exit press CTRL+C' % (serviceName())
