@@ -35,7 +35,7 @@ def unpackMessage(rk,body):
   d = json.loads(body)
   id = d["request_id"]
   timestamp = d["timestamp"]
-  print " [validate] Received %r:%r:%r" % (id,timestamp,rk)
+  print " [validate] Received |%r|%r|%r" % (id,timestamp,rk)
   return d
 
 def publishEvent(channel, exchange, routing_key, message_dict):
@@ -43,7 +43,7 @@ def publishEvent(channel, exchange, routing_key, message_dict):
   channel.basic_publish(exchange=exchange,
                        routing_key=routing_key,
                        body=newBody)
-  print " [validate] Sent     %r:%r:%r" % (message_dict["request_id"],
+  print " [validate] Sent     |%r|%r|%r" % (message_dict["request_id"],
                                           message_dict["timestamp"],routing_key)
 
 def sleepOneOrTwo():

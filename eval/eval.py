@@ -53,12 +53,12 @@ def serviceName():
 
 def logReceive(routing_key, message):
   uid = uuid.UUID(message["request_id"])
-  print " [%s] Received %r:%r:%r" % (serviceName(),
+  print " [%s] Received |%r|%r|%r" % (serviceName(),
   	str(uid),message["timestamp"],routing_key)
 
 def logSend(routing_key, message):
   uid = uuid.UUID(message["request_id"])
-  print " [%s] Sent     %r:%r:%r" % (serviceName(),
+  print " [%s] Sent     |%r|%r|%r" % (serviceName(),
   	str(uid),message["timestamp"],routing_key)
 
 def sleepRandom(min,max):
@@ -112,7 +112,7 @@ def logAndSendResponseTime(id):
   complete_time = time.time()
   response_time = complete_time - start_time[id]
   rt_message = { "request_id" : id, "response_time" : response_time }
-  print " [%s] Response %r:%r" % (serviceName(),str(id),response_time)
+  print " [%s] Response |%r|%r" % (serviceName(),str(id),response_time)
   rt_message = {}
   rt_message["request_id"] = str(id)
   rt_message["timestamp"]  = response_time

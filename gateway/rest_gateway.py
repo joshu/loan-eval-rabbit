@@ -76,7 +76,7 @@ def create_request():
 def publish_eval_request(eval_request):
     publish_key = 'pml.eval.request'
     eval_request["timestamp"]=time.time()
-    print "rest gateway publishing pml.eval.request: %r:%r" % (eval_request["request_id"], eval_request["timestamp"])
+    print "rest gateway publishing pml.eval.request: |%r|%r" % (eval_request["request_id"], eval_request["timestamp"])
     message = json.dumps(eval_request)
     channel.basic_publish(exchange='topic_loan_eval',
                           routing_key=publish_key,

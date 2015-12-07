@@ -7,7 +7,7 @@ docker build -t fre/credit .
 cd ../eval
 docker build -t fre/eval .
 cd ../gateway
-docker build -t fre/gateway .
+docker build -t fre/rest_gateway .
 cd ../purchase
 docker build -t fre/purchase .
 cd ../validate

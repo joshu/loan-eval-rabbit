@@ -42,7 +42,7 @@ def unpackMessage(rk,body):
   d = json.loads(body)
   uid = uuid.UUID(d["request_id"])
   timestamp = d["timestamp"]
-  print " [aggregator] Received %r:%r:%r" % (str(uid),timestamp,rk)
+  print " [aggregator] Received |%r|%r|%r" % (str(uid),timestamp,rk)
   return d
 
 def publishEvent(channel,exchange,routing_key,timestamp,id,event):
@@ -52,7 +52,7 @@ def publishEvent(channel,exchange,routing_key,timestamp,id,event):
   channel.basic_publish(exchange=exchange,
                        routing_key=routing_key,
                        body=eventJSON)
-  print " [aggregator] Sent     %r:%r:%r" % (str(uid),timestamp,routing_key)
+  print " [aggregator] Sent     |%r|%r|%r" % (str(uid),timestamp,routing_key)
 
 def consumeEvents(chan, qn):
   chan.basic_consume(handleEvents,

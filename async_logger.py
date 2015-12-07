@@ -53,7 +53,7 @@ class Consumer(object):
       eval_request = json.loads(message)
  #     print(message)
       uid = uuid.UUID(eval_request["request_id"])
-      print " [%s] Received %r:%r:%r" % (self.serviceName(),
+      print " [%s] Received |%r|%r|%r" % (self.serviceName(),
         str(uid),eval_request["timestamp"],routing_key)
 
 
