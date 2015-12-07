@@ -1,4 +1,4 @@
-#! /usr/local/bin/bash
+#! /usr/bin/bash
 
 cd aggregator
 docker build -t fre/aggregator .
