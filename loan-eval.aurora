@@ -1,0 +1,60 @@
+# --- processes here ---
+rabbitmq_proc = Process(
+    name="rabbitmq_process",
+    cmdline="rabbitmq?")
+rest_gateway_proc = Process(
+    name="rest_gateway_process",
+    cmdline="python rest_gateway.py")
+eval_proc = Process(
+    name="eval_process",
+    cmdline="python eval.py")
+validation_proc = Process(
+    name="validation_process",
+    cmdline="python validation.py")
+credit_proc = Process(
+    name="credit_process",
+    cmdline="python credit.py")
+purchase_proc = Process(
+    name="purchase_process",
+    cmdline="python purchase.py")
+aggregator_proc = Process(
+    name="aggregator_process",
+    cmdline="python aggregator.py")
+
+# --- tasks ---
+rabbitmq_task = Task(
+  name = 'rabbitmq task',
+  processes = [rabbitmq_proc],
+  resources = Resources(cpu = 0.1, ram = 32*MB, disk=8*MB))
+
+# -- job instantiations --
+jobs = [
+  Service(cluster = 'resilab', environment = 'devel',  role = 'api-gateway',
+          name = 'rabbitmq',
+          task = rabbitmq_task,
+          container = Container(docker = Docker(image = 'localhost:5002/rabbitmq'))),
+  Service(cluster = 'resilab', environment = 'devel',  role = 'api-gateway',
+          name = 'rest_gateway',
+          task = rest_gateway_task,
+          container = Container(docker = Docker(image = 'localhost:5002/fre/rest_gateway'))),
+  Service(cluster = 'resilab', environment = 'devel',  role = 'eval-controller',
+          name = 'eval',
+          task = eval_task,
+          container = Container(docker = Docker(image = 'localhost:5002/fre/eval'))),
+  Service(cluster = 'resilab', environment = 'devel',  role = 'validation-service',
+          name = 'validation',
+          task = validation_task,
+          container = Container(docker = Docker(image = 'localhost:5002/fre/validation'))),
+  Service(cluster = 'resilab', environment = 'devel',  role = 'purchase-service',
+          name = 'purchase',
+          task = purchase_task,
+          container = Container(docker = Docker(image = 'localhost:5002/fre/purchase'))),
+  Service(cluster = 'resilab', environment = 'devel',  role = 'credit-service',
+        name = 'credit',
+        task = credit_task,
+        container = Container(docker = Docker(image = 'localhost:5002/fre/credit'))),
+  Service(cluster = 'resilab', environment = 'devel',  role = 'service-aggregator',
+        name = 'aggregator',
+        task = aggregator_task,
+        container = Container(docker = Docker(image = 'localhost:5002/fre/aggregator'))),
+          ]
